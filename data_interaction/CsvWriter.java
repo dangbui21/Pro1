@@ -2,6 +2,7 @@ package data_interaction;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import dataMining.Article;
 import com.opencsv.CSVWriter;
@@ -73,17 +74,37 @@ public class CsvWriter {
             e.printStackTrace();
         }     
     }
-   
-    public void dang_saveLink(String linkPath , ArrayList<String> links) {
-    	try (CSVWriter writer = new CSVWriter(new FileWriter(linkPath))) {
-            for (String link : links) {
-                String[] data = {link};
-                writer.writeNext(data);
+      
+    public void dang_appendLink(String linkPath, ArrayList<String> links) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(linkPath, true))) { // Chú ý thêm đối số true để mở chế độ ghi thêm
+            // Ghi dữ liệu mới vào cuối file CSV
+        	CsvReader re = new CsvReader();
+        	int x = re.dang_countLines(linkPath)-1;
+            for (int i = x ; i < x + links.size(); i++) {
+                String[] data = {String.valueOf(i + 1), links.get(i-x), "0"}; // Mặc định selected là 0
+                writer.writeNext(data);           
             }
-            System.out.println("Links have been saved to " + linkPath);
+            System.out.println("Links have been appended to " + linkPath);
         } catch (IOException e) {
-            System.err.println("Error writing links to CSV file: " + e.getMessage());
+            System.err.println("Error appending links to CSV file: " + e.getMessage());
         }
-	}
+    }
+    
+    public void dang_update(List<String> sttList, List<String> linkList, List<String> selectedList) {  
+        // update lại dữ liệu 
+    	try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("stt,link,selected\n"); // Viết tiêu đề cột vào file CSV
+            for (int i = 0; i < sttList.size(); i++) {
+                writer.write("\"" + sttList.get(i) + "\",\"" + linkList.get(i) + "\",\"" + selectedList.get(i) + "\"\n");
+            }
+            System.out.println("Data saved to " + filePath);
+        } catch (IOException e) {
+            System.err.println("Error saving data to CSV file: " + e.getMessage());
+        }
+    }
+    
+    public static void main(String[] args) {
+    
+    }
     
 }

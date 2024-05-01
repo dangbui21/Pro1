@@ -39,27 +39,27 @@ public class Crawl {
         
         //Load them bai viet
         Random random = new Random();
-        for(int i=0 ; i<120 ; i++) {
-        	// Tìm phần tử chứa nút "Load More Posts"
-            WebElement loadMoreButton = driver.findElement(By.id("btnLoadMore"));
-            // Thực hiện click vào nút "Load More Posts"
-            loadMoreButton.click();
-            
-            // ngủ từ 2 đến 4 giây
-            int randomDelay = random.nextInt(4) + 2;
-            try {
-                Thread.sleep(randomDelay * 1000);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt(); 
-            }
-        }
+//        for(int i=0 ; i<3 ; i++) {
+//        	// Tìm phần tử chứa nút "Load More Posts"
+//            WebElement loadMoreButton = driver.findElement(By.id("btnLoadMore"));
+//            // Thực hiện click vào nút "Load More Posts"
+//            loadMoreButton.click();
+//            
+//            // ngủ từ 2 đến 4 giây
+//            int randomDelay = random.nextInt(4) + 3;
+//            try {
+//                Thread.sleep(randomDelay * 1000);
+//            } catch (InterruptedException ex) {
+//                Thread.currentThread().interrupt(); 
+//            }
+//        }
         
         // Lấy HTML của trang web đã được tải hoàn toàn
         String html = driver.getPageSource();       
         // Sử dụng Jsoup để phân tích HTML
         Document document = Jsoup.parse(html);
         // Tìm tất cả các phần tử có class là "h5.entry-title"
-        Elements entryTitles = document.select("h5.entry-title");
+        Elements entryTitles = document.select("h4.card-title");
         
         //Lưu lại các link bài viết
         ArrayList<String> links = new ArrayList<>();
@@ -68,15 +68,15 @@ public class Crawl {
             String link = linkElement.attr("href");
             articleLink = webLink + link;
             links.add(articleLink);
-        }
+    
         CsvWriter writer = new CsvWriter(dataPath);
         writer.dang_saveLink(linkPath, links);
         
         // Duyệt qua các phần tử và lấy văn bản trong đó 
         int i = CsvReader.dang_countLines(dataPath);//số hàng đang có trong file csv
-        for (Element entryTitle : entryTitles) {     
-        	Element linkElement = entryTitle.select("a").first();
-        	String link = linkElement.attr("href");
+        for (Element entry : entryTitles) {     
+        	Element elink = entry.select("a").first();
+        	String slink = elink.attr("href");
         	Crawl_in_one crOne = new Crawl_in_one();
         	articleLink = webLink + link;
         	System.out.println("articleLink : " + articleLink);
@@ -103,4 +103,5 @@ public class Crawl {
             i++;          
         }
     }
+}
 }
