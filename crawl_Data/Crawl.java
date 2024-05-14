@@ -68,9 +68,9 @@ public class Crawl {
             String link = linkElement.attr("href");
             articleLink = webLink + link;
             links.add(articleLink);
-    
-        CsvWriter writer = new CsvWriter(dataPath);
-        writer.dang_saveLink(linkPath, links);
+//    
+//        CsvWriter writer = new CsvWriter(dataPath);
+//        writer.dang_saveLink(linkPath, links);
         
         // Duyệt qua các phần tử và lấy văn bản trong đó 
         int i = CsvReader.dang_countLines(dataPath);//số hàng đang có trong file csv

@@ -7,15 +7,25 @@ import org.apache.commons.csv.CSVRecord;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
+import dataMining.Article;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class CsvReader {
 	public static void main(String[] args) throws CsvValidationException {
-        String filePath = "D:/Workspace/Java/Pro1/data/link.csv";
+        String filePath = "D:/Workspace/Java/Pro1/data/1/links.csv";
         int lineCount = dang_countLines(filePath);
         System.out.println("Number of lines in the CSV file: " + lineCount);
         
@@ -74,4 +84,69 @@ public class CsvReader {
             e.printStackTrace();
         }
     }
+    
+    public void theanh_find(String filePath,List <Article> article) {
+      	 //   List<Article> article = new ArrayList<>();
+       	System.out.println("theanh_find path " + filePath);
+       	String line;
+      	    try {
+      	    	BufferedReader reader = new BufferedReader(new FileReader(filePath));
+
+      	        while ((line = reader.readLine()) != null) {
+      	            String[] parts = line.split(",");
+      	            String id = parts[0];
+      	            String articleLink = parts[1];
+      	            String websiteSource = parts[2];
+      	            String articleType = parts[3];
+      	            String articleSummary = parts[4];
+      	            String articleTitle = parts[5];
+      	            String content = parts[6];
+      	            String date = parts[7];
+      	            String tagHash = parts[8];
+      	            String author = parts[9];
+      	            String category = parts[10];
+      	            
+
+      	            
+      	            article.add (new Article( id,  articleLink,  websiteSource,  articleType,
+      	                       articleSummary,  articleTitle,  content,  date,
+      	                        tagHash,  author, category));
+      	        }
+      	   	                	                
+      	            
+      	      reader.close();
+      	    } catch (IOException e) {
+      	        e.printStackTrace();
+      	    }
+    }
+    
+    
+    public static DefaultTableModel loadCsvData(File csvFile) {
+        DefaultTableModel originalCsvData = new DefaultTableModel();
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(csvFile));
+            CSVParser csvParser = CSVFormat.DEFAULT.parse(inputStreamReader);
+            int start = 0;
+            for (CSVRecord csvRecord : csvParser) {
+                if (start == 0) {
+                    start = 1;
+                    for (int i = 0; i < csvRecord.size(); i++) {
+                        originalCsvData.addColumn(csvRecord.get(i));
+                    }
+                } else {
+                    Vector row = new Vector();
+                    for (int i = 0; i < csvRecord.size(); i++) {
+                        row.add(csvRecord.get(i));
+                    }
+                    originalCsvData.addRow(row);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi khi đọc tệp CSV: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return originalCsvData;
+    }
+    
+    
 } 

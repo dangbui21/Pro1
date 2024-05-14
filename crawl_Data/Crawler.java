@@ -4,10 +4,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class Crawler {
 	protected String key_articleLink;
@@ -37,8 +41,24 @@ public class Crawler {
         this.key_author = "unknow";
         this.key_category = "unknow";
         this.chromePath = "D:/Workspace/Java/Pro1/chrome-win64/chrome.exe"; 
-        this.dataPath = "D:/Workspace/Java/Pro1/data/data.csv";
-        this.linkPath = "D:/Workspace/Java/Pro1/data/link.csv";
+        this.dataPath = "D:/Workspace/Java/Pro1/data/1/data.csv";
+        this.linkPath = "D:/Workspace/Java/Pro1/data/1/links.csv";
+    }
+    
+    public Crawler(String dataPath, String linkPath) {
+    	this.key_articleLink = "unknow";
+        this.key_websiteSource = "unknow";
+        this.key_articleType = "unknow";
+        this.key_articleSummary = "unknow";
+        this.key_articleTitle = "unknow";
+        this.key_content = "unknow";
+        this.key_date = "unknow";
+        this.key_tagHash = "unknow";
+        this.key_author = "unknow";
+        this.key_category = "unknow";
+        this.chromePath = "D:/Workspace/Java/Pro1/chrome-win64/chrome.exe"; 
+        this.dataPath = dataPath;
+        this.linkPath = linkPath;
     }
     
     public Crawler(String key_articleLink, String key_websiteSource, String key_articleType,
@@ -89,7 +109,7 @@ public class Crawler {
 	
 	public String dang_select_Title(Document document) {
 		if(key_articleTitle == "unkown") return "unkown";
-		Element title = document.selectFirst(key_articleTitle);
+		Element title = document.select(key_articleTitle).first();
         String articleTitle = title.text();
         System.out.println("Title : " + articleTitle);
         return articleTitle;
