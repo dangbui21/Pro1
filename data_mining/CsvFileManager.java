@@ -1,4 +1,4 @@
-package dataMining;
+package data_mining;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import java.io.File;

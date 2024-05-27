@@ -1,9 +1,7 @@
-package crawl_Data;
+package crawl_data;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.jsoup.Jsoup;
@@ -15,7 +13,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import dataMining.Article;
+import com.opencsv.exceptions.CsvValidationException;
+
 import data_interaction.CsvReader;
 import data_interaction.CsvWriter;
 
@@ -76,79 +75,151 @@ public class Crawler_3 extends Crawler {
         js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
     }
     
-  public static void main(String[] args) {   
-  String articleLink = "https://www.ibm.com/blog/the-orion-blockchain-database-empowering-multi-party-data-governance/";
-	// Khởi tạo một đối tượng Crawl_2 với constructor mặc định
-   Crawler_3 cr2 = new Crawler_3("D:/Workspace/Java/Pro1/data/3/data.csv" ,"D:/Workspace/Java/Pro1/data/3/links.csv"); 
-   cr2.setKey();
+    
+    public static void main(String[] args) throws CsvValidationException {   
+        // Khởi tạo một đối tượng Crawl_2 với constructor mặc định
+        Crawler_3 cr2 = new Crawler_3("D:/Workspace/Java/Pro1/data/3/data.csv" ,"D:/Workspace/Java/Pro1/data/3/links.csv"); 
+        cr2.setKey();
+        //lấy danh sách đường link đã thu thập
+        // Khởi tạo danh sách để lưu dữ liệu từ file CSV
+        List<String> sttList = new ArrayList<>();
+        List<String> linkList = new ArrayList<>();
+        List<String> selectedList = new ArrayList<>();
+  
+        // Tạo một đối tượng CsvReader và gọi phương thức để đọc dữ liệu từ file CSV
+        CsvReader csvReader = new CsvReader();
+        csvReader.read(cr2.linkPath, sttList, linkList, selectedList);
         
-//   // Thiết lập ChromeOptions
-//   ChromeOptions options = new ChromeOptions();
-//   options.setBinary(cr2.chromePath); // Đặt đường dẫn tới chrome.exe
-//   // Khởi tạo WebDriver với ChromeOptions
-//   WebDriver driver = new ChromeDriver(options);
-//   // Mở trang web
-//  
-//	   driver.get(articleLink);  
-//      // Wait để đảm bảo trang web được tải hoàn toàn
-//      try {
-//          Thread.sleep(6000); 
-//      } catch (InterruptedException e) {
-//          e.printStackTrace();
-//      }
-//      
-//      // Lấy HTML của trang web đã được tải hoàn toàn
-//      String html = driver.getPageSource();       
-//
-//      // Sử dụng Jsoup để phân tích HTML
-//      Document document = Jsoup.parse(html);
-//      // Lưu HTML vào file
-//        String fileName = "output.txt";
-//      try {
-//          BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-//          writer.write(document.outerHtml());
-//          writer.close();
-//          System.out.println("HTML đã được lưu vào file '" + fileName + "' thành công.");
-//      } catch (IOException e) {
-//          System.out.println("Đã xảy ra lỗi khi ghi vào file: " + e.getMessage());
-//      }
-      
-     // Đường dẫn tới file HTML
-        String filePath = "output.txt";
-
-        // Phân tích HTML từ file
-        Document document = null;
-        try {
-            File input = new File(filePath);
-            document = Jsoup.parse(input, "UTF-8");
-        } catch (IOException e) {
-            System.out.println("Đã xảy ra lỗi khi đọc file: " + e.getMessage());
+        // Thiết lập ChromeOptions
+        ChromeOptions options = new ChromeOptions();
+        options.setBinary(cr2.chromePath); // Đặt đường dẫn tới chrome.exe
+        // Khởi tạo WebDriver với ChromeOptions
+        WebDriver driver = new ChromeDriver(options);
+        int x =0;
+        for(String link : linkList) {		   
+		   if (selectedList.get(x).equals("0")) {
+			   cr2.setKey_articleLink(link);
+			   try {
+			        driver.get(link);  
+			        // Wait để đảm bảo trang web được tải hoàn toàn
+					Random random = new Random();
+					int randomDelay = random.nextInt(6) + 4;
+					try {
+					    Thread.sleep(randomDelay * 1000); 
+					} catch (InterruptedException e) {
+					    e.printStackTrace();
+					}				
+					// Lấy HTML của trang web đã được tải hoàn toàn
+					String html = driver.getPageSource();       				
+					// Sử dụng Jsoup để phân tích HTML
+					Document document = Jsoup.parse(html);	
+					
+					// Khởi tạo một đối tượng Crawl_2 với constructor mặc định
+//					Crawler_2 cr1 = new Crawler_2();  				
+					Article ar = new Article();
+					CsvWriter csvWriter = new CsvWriter(cr2.dataPath);				
+					// Duyệt qua các phần tử và lấy văn bản trong đó 
+					int i = CsvReader.countLines(cr2.dataPath); //số hàng đang có trong file csv
+				
+				    ar.setId(i);
+				    ar.setArticleLink(cr2.select_ArticleLink()); 
+				    ar.setArticleTitle(cr2.select_Title(document));
+				    ar.setArticleSummary(cr2.select_Summary(document));
+				    ar.setArticleType(cr2.select_ArticleType());
+				    ar.setAuthor(cr2.select_Author(document));
+				    ar.setCategory(cr2.select_Category(document));
+				    ar.setContent(cr2.select_Content(document));
+				    ar.setDate(cr2.select_Date(document));
+				    ar.setTagHash(cr2.select_Tags(document));
+				    ar.setWebsiteSource(cr2.select_WebsiteSource());
+				
+				    csvWriter.appendData(ar);
+				    
+				    selectedList.set(x, "1");
+				    
+					} catch (Exception e) {
+					    System.err.println("Error processing link: " + link + " - " + e.getMessage());
+					}
+		   }		   
+		   x++;
         }
-                
-               
-      
-		
-      
-      Article ar = new Article();
-      CsvWriter csvWriter = new CsvWriter(cr2.dataPath);
-      
-      // Duyệt qua các phần tử và lấy văn bản trong đó 
-      int i = CsvReader.dang_countLines(cr2.dataPath);//số hàng đang có trong file csv
-      
-      ar.setId(i);
-      ar.setArticleLink(cr2.dang_select_ArticleLink()); 
-      ar.setArticleTitle(cr2.dang_select_Title(document));
-      ar.setArticleSummary(cr2.dang_select_Summary(document));
-      ar.setArticleType(cr2.dang_select_ArticleType());
-      ar.setAuthor(cr2.dang_select_Author(document));
-      ar.setCategory(cr2.dang_select_Category(document));
-      ar.setContent(cr2.dang_select_Content(document));
-      ar.setDate(cr2.dang_select_Date(document));
-      ar.setTagHash(cr2.dang_select_Tags(document));
-      ar.setWebsiteSource(cr2.dang_select_WebsiteSource());
-      
-//      csvWriter.dang_AppendData(ar);
-  }
+        CsvWriter w = new CsvWriter(cr2.linkPath);
+        w.updateLink(sttList, linkList, selectedList);                         
+    }
+    
+//    public static void main(String[] args) {   
+//    	String articleLink = "https://www.ibm.com/blog/the-orion-blockchain-database-empowering-multi-party-data-governance/";
+//	// Khởi tạo một đối tượng Crawl_2 với constructor mặc định
+//		Crawler_3 cr2 = new Crawler_3("D:/Workspace/Java/Pro1/data/3/data.csv" ,"D:/Workspace/Java/Pro1/data/3/links.csv"); 
+//		cr2.setKey();
+//        
+//	//   // Thiết lập ChromeOptions
+//	//   ChromeOptions options = new ChromeOptions();
+//	//   options.setBinary(cr2.chromePath); // Đặt đường dẫn tới chrome.exe
+//	//   // Khởi tạo WebDriver với ChromeOptions
+//	//   WebDriver driver = new ChromeDriver(options);
+//	//   // Mở trang web
+//	//  
+//	//	   driver.get(articleLink);  
+//	//      // Wait để đảm bảo trang web được tải hoàn toàn
+//	//      try {
+//	//          Thread.sleep(6000); 
+//	//      } catch (InterruptedException e) {
+//	//          e.printStackTrace();
+//	//      }
+//	//      
+//	//      // Lấy HTML của trang web đã được tải hoàn toàn
+//	//      String html = driver.getPageSource();       
+//	//
+//	//      // Sử dụng Jsoup để phân tích HTML
+//	//      Document document = Jsoup.parse(html);
+//	//      // Lưu HTML vào file
+//	//        String fileName = "output.txt";
+//	//      try {
+//	//          BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+//	//          writer.write(document.outerHtml());
+//	//          writer.close();
+//	//          System.out.println("HTML đã được lưu vào file '" + fileName + "' thành công.");
+//	//      } catch (IOException e) {
+//	//          System.out.println("Đã xảy ra lỗi khi ghi vào file: " + e.getMessage());
+//	//      }
+//	      
+//	     // Đường dẫn tới file HTML
+//	        String filePath = "output.txt";
+//	
+//	        // Phân tích HTML từ file
+//	        Document document = null;
+//	        try {
+//	            File input = new File(filePath);
+//	            document = Jsoup.parse(input, "UTF-8");
+//	        } catch (IOException e) {
+//	            System.out.println("Đã xảy ra lỗi khi đọc file: " + e.getMessage());
+//	        }
+//	                
+//	               
+//	      
+//			
+//	      
+//	      Article ar = new Article();
+//	      CsvWriter csvWriter = new CsvWriter(cr2.dataPath);
+//	      
+//	      // Duyệt qua các phần tử và lấy văn bản trong đó 
+//	      int i = CsvReader.dang_countLines(cr2.dataPath);//số hàng đang có trong file csv
+//	      
+//	      ar.setId(i);
+//	      ar.setArticleLink(cr2.dang_select_ArticleLink()); 
+//	      ar.setArticleTitle(cr2.dang_select_Title(document));
+//	      ar.setArticleSummary(cr2.dang_select_Summary(document));
+//	      ar.setArticleType(cr2.dang_select_ArticleType());
+//	      ar.setAuthor(cr2.dang_select_Author(document));
+//	      ar.setCategory(cr2.dang_select_Category(document));
+//	      ar.setContent(cr2.dang_select_Content(document));
+//	      ar.setDate(cr2.dang_select_Date(document));
+//	      ar.setTagHash(cr2.dang_select_Tags(document));
+//	      ar.setWebsiteSource(cr2.dang_select_WebsiteSource());
+//	      
+//	//      csvWriter.dang_AppendData(ar);
+//  }
         
 
     

@@ -1,17 +1,13 @@
-package crawl_Data;
+package crawl_data;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 public class Crawler {
 	protected String key_articleLink;
@@ -81,25 +77,25 @@ public class Crawler {
 }
    
     //select
-    public String dang_select_ArticleLink() {
+    public String select_ArticleLink() {
     	if(key_articleLink == "unkown") return "unkown";
     	System.out.println("Link: " + key_articleLink);
     	return key_articleLink;
     }
     
-    public String dang_select_WebsiteSource() {
+    public String select_WebsiteSource() {
     	if(key_websiteSource == "unkown") return "unkown";
     	System.out.println("WebSource: " + key_websiteSource);
     	return key_websiteSource;
     }
     
-    public String dang_select_ArticleType() {
+    public String select_ArticleType() {
     	if(key_articleType == "unkown") return "unkown";
     	System.out.println("Type: " + key_articleType);
     	return key_articleType;
 	}
 	
-	public String dang_select_Summary(Document document) {
+	public String select_Summary(Document document) {
 		if(key_articleSummary == "unkown") return "unkown";
 		Element summary = document.selectFirst(key_articleSummary);
         String summaryText = summary.text();
@@ -107,7 +103,7 @@ public class Crawler {
         return summaryText;
 	}
 	
-	public String dang_select_Title(Document document) {
+	public String select_Title(Document document) {
 		if(key_articleTitle == "unkown") return "unkown";
 		Element title = document.select(key_articleTitle).first();
         String articleTitle = title.text();
@@ -115,7 +111,7 @@ public class Crawler {
         return articleTitle;
 	}
 	
-	public String dang_select_Content(Document document) {
+	public String select_Content(Document document) {
 		if(key_content == "unkown") return "unkown";
 		Element div = document.selectFirst(key_content);
         String content = div.text();
@@ -123,7 +119,7 @@ public class Crawler {
         return content;
 	}
 	
-	public String dang_select_Date(Document document) {
+	public String select_Date(Document document) {
 		if(key_date == "unkown") return "unkown";
 		Element timeElement = document.selectFirst(key_date);
         String dateString = timeElement.text();
@@ -131,7 +127,7 @@ public class Crawler {
         return dateString;
 	}
 	
-	public String dang_select_Tags(Document document) {
+	public String select_Tags(Document document) {
 		//select tag
 		if(key_tagHash == "unkown") return "unkown";
         Elements tagElements = document.select(key_tagHash);
@@ -150,7 +146,7 @@ public class Crawler {
         return tagsString;
 	}
 	
-	public String dang_select_Author(Document document) {
+	public String select_Author(Document document) {
 		//select Author's
 		if(key_author == "unkown") return "unkown";
         Element aTag = document.selectFirst(key_author);
@@ -159,7 +155,7 @@ public class Crawler {
         return author;
 	}
 	
-	public String dang_select_Category(Document document) {
+	public String select_Category(Document document) {
         if(key_category == "unkown") return "unkown";
 		Element cate = document.selectFirst(key_category);
         String category = cate.text();

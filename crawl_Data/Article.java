@@ -1,4 +1,4 @@
-package dataMining;
+package crawl_data;
 
 public class Article {
     private String id;

@@ -1,4 +1,4 @@
-package crawl_Data;
+package crawl_data;
 
 import java.util.Random;
 
@@ -10,7 +10,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import dataMining.Article;
 import data_interaction.CsvReader;
 import data_interaction.CsvWriter;
 
@@ -19,14 +18,28 @@ public class Crawler_1 extends Crawler {
 	// Default constructor
     public Crawler_1() {
         super();
-        String webLink = "https://www.blockchain.com/blog";
     }
 	 
-//    public Crawler_1(String articleLink, String websiteSource, String articleType,
-//                   String articleSummary, String articleTitle, String content,
-//                   String date, String tagHash, String author, String category) {
-//        super(articleLink, websiteSource, articleType, articleSummary, articleTitle, content, date, tagHash, author, category);
-//    }
+    public static void clickLoadMoreButton(WebDriver driver) {
+        Random random = new Random();
+        for (int i = 0; i < 30; i++) {
+            try {
+                // Tìm phần tử chứa nút "Load More Posts"
+                WebElement loadMoreButton = driver.findElement(By.className("LoadMoreButton-loadMore"));
+                // Thực hiện click vào nút "Load More Posts"
+                loadMoreButton.click();
+
+                // ngủ từ 4 đến 8 giây
+                int randomDelay = random.nextInt(5) + 4;
+                Thread.sleep(randomDelay * 1000);
+            } catch (Exception e) {
+                // Xử lý lỗi (ví dụ: in ra thông báo)
+                System.out.println("Đã xảy ra lỗi khi thực hiện click vào nút Load More Posts: " + e.getMessage());
+                // Break ra khỏi vòng lặp nếu có lỗi
+                break;
+            }
+        }
+    }
     
     // Hàm setKey để gán giá trị cho tất cả các thuộc tính kế thừa từ lớp Crawler
     public void setKey(String articleLink) {
@@ -93,21 +106,21 @@ public class Crawler_1 extends Crawler {
         cr1.setKey(articleLink);
         
         // Duyệt qua các phần tử và lấy văn bản trong đó 
-        int i = CsvReader.dang_countLines(dataPath);//số hàng đang có trong file csv
+        int i = CsvReader.countLines(dataPath);//số hàng đang có trong file csv
         
         ar.setId(i);
-        ar.setArticleLink(cr1.dang_select_ArticleLink()); 
-        ar.setArticleTitle(cr1.dang_select_Title(document));
-        ar.setArticleSummary(cr1.dang_select_Summary(document));
-        ar.setArticleType(cr1.dang_select_ArticleType());
-        ar.setAuthor(cr1.dang_select_Author(document));
-        ar.setCategory(cr1.dang_select_Category(document));
-        ar.setContent(cr1.dang_select_Content(document));
-        ar.setDate(cr1.dang_select_Date(document));
-        ar.setTagHash(cr1.dang_select_Tags(document));
-        ar.setWebsiteSource(cr1.dang_select_WebsiteSource());
+        ar.setArticleLink(cr1.select_ArticleLink()); 
+        ar.setArticleTitle(cr1.select_Title(document));
+        ar.setArticleSummary(cr1.select_Summary(document));
+        ar.setArticleType(cr1.select_ArticleType());
+        ar.setAuthor(cr1.select_Author(document));
+        ar.setCategory(cr1.select_Category(document));
+        ar.setContent(cr1.select_Content(document));
+        ar.setDate(cr1.select_Date(document));
+        ar.setTagHash(cr1.select_Tags(document));
+        ar.setWebsiteSource(cr1.select_WebsiteSource());
         
-        csvWriter.dang_AppendData(ar);
+        csvWriter.appendData(ar);
         
     }
     

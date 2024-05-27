@@ -4,19 +4,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dataMining.Article;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvValidationException;
+
+import crawl_data.Article;
 
 
-public class CsvWriter {
+public class CsvWriter implements DataWriter {
     private String filePath;
     
     //truyền đường dẫn tới file lưu
     public CsvWriter(String filePath) {
         this.filePath = filePath;
     }
-
-    public void dang_AppendData(String id, String articleLink, String websiteSource, String articleType,
+    
+    @Override
+    public void appendData(String id, String articleLink, String websiteSource, String articleType,
                            String articleSummary, String articleTitle, String content, String date,
                            String tagHash, String author, String category) {
         try {
@@ -45,8 +48,8 @@ public class CsvWriter {
         
     }
     
-    
-    public void dang_AppendData(Article article) {
+    @Override
+    public void appendData(Article article) {
         try {
             // FileWriter để ghi vào file CSV
             FileWriter writer = new FileWriter(filePath, true);
@@ -74,12 +77,13 @@ public class CsvWriter {
             e.printStackTrace();
         }     
     }
-      
-    public void dang_appendLink(String linkPath, ArrayList<String> links) {
+    
+    @Override
+    public void appendLink(String linkPath, ArrayList<String> links) {
         try (CSVWriter writer = new CSVWriter(new FileWriter(linkPath, true))) { // Chú ý thêm đối số true để mở chế độ ghi thêm
             // Ghi dữ liệu mới vào cuối file CSV
         	CsvReader re = new CsvReader();
-        	int x = re.dang_countLines(linkPath)-1;
+        	int x = re.countLines(linkPath)-1;
             for (int i = x ; i < x + links.size(); i++) {
                 String[] data = {String.valueOf(i + 1), links.get(i-x), "0"}; // Mặc định selected là 0
                 writer.writeNext(data);           
@@ -89,8 +93,9 @@ public class CsvWriter {
             System.err.println("Error appending links to CSV file: " + e.getMessage());
         }
     }
-    
-    public void dang_update(List<String> sttList, List<String> linkList, List<String> selectedList) {  
+
+    @Override
+    public void updateLink(List<String> sttList, List<String> linkList, List<String> selectedList) {  
         // update lại dữ liệu 
     	try (FileWriter writer = new FileWriter(filePath)) {
             writer.write("stt,link,selected\n"); // Viết tiêu đề cột vào file CSV
@@ -103,8 +108,7 @@ public class CsvWriter {
         }
     }
     
-    public static void main(String[] args) {
-    
-    }
+
+
     
 }

@@ -1,11 +1,5 @@
-package crawl_Data;
+package crawl_data;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -13,7 +7,6 @@ import java.util.Random;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -22,7 +15,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.opencsv.exceptions.CsvValidationException;
 
-import dataMining.Article;
 import data_interaction.CsvReader;
 import data_interaction.CsvWriter;
 
@@ -34,11 +26,9 @@ public class Crawler_2 extends Crawler {
        
     }
 	 
-//    public Crawler_2(String articleLink, String websiteSource, String articleType,
-//                   String articleSummary, String articleTitle, String content,
-//                   String date, String tagHash, String author, String category) {
-//        super(articleLink, websiteSource, articleType, articleSummary, articleTitle, content, date, tagHash, author, category);
-//    }
+    public Crawler_2(String dataPath, String linkPath) {
+    	super(dataPath, linkPath);
+    }
     
     // Hàm setKey để gán giá trị cho tất cả các thuộc tính kế thừa từ lớp Crawler
     public void setKey() {
@@ -56,7 +46,7 @@ public class Crawler_2 extends Crawler {
     
     
    @Override	
-   public String dang_select_Date(Document document) {
+   public String select_Date(Document document) {
 	   if("unknown".equals(key_date)) return "unknown";
 	   Element timeElement = document.selectFirst(key_date);
        String datetime = timeElement.attr("datetime");
@@ -88,8 +78,8 @@ public class Crawler_2 extends Crawler {
    }
     
     public static void main(String[] args) throws CsvValidationException {   
-        // Khởi tạo một đối tượng Crawl_2 với constructor mặc định
-        Crawler_2 cr2 = new Crawler_2(); 
+      
+        Crawler_2 cr2 = new Crawler_2("D:/Workspace/Java/Pro1/data/2/data.csv" ,"D:/Workspace/Java/Pro1/data/2/links.csv"); 
         cr2.setKey();
         //lấy danh sách đường link đã thu thập
         // Khởi tạo danh sách để lưu dữ liệu từ file CSV
@@ -99,7 +89,7 @@ public class Crawler_2 extends Crawler {
   
         // Tạo một đối tượng CsvReader và gọi phương thức để đọc dữ liệu từ file CSV
         CsvReader csvReader = new CsvReader();
-        csvReader.readCsvFile(cr2.linkPath, sttList, linkList, selectedList);
+        csvReader.read(cr2.linkPath, sttList, linkList, selectedList);
         
         // Thiết lập ChromeOptions
         ChromeOptions options = new ChromeOptions();
@@ -130,21 +120,21 @@ public class Crawler_2 extends Crawler {
 					Article ar = new Article();
 					CsvWriter csvWriter = new CsvWriter(cr2.dataPath);				
 					// Duyệt qua các phần tử và lấy văn bản trong đó 
-					int i = CsvReader.dang_countLines(cr2.dataPath); //số hàng đang có trong file csv
+					int i = CsvReader.countLines(cr2.dataPath); //số hàng đang có trong file csv
 				
 				    ar.setId(i);
-				    ar.setArticleLink(cr2.dang_select_ArticleLink()); 
-				    ar.setArticleTitle(cr2.dang_select_Title(document));
-				    ar.setArticleSummary(cr2.dang_select_Summary(document));
-				    ar.setArticleType(cr2.dang_select_ArticleType());
-				    ar.setAuthor(cr2.dang_select_Author(document));
-				    ar.setCategory(cr2.dang_select_Category(document));
-				    ar.setContent(cr2.dang_select_Content(document));
-				    ar.setDate(cr2.dang_select_Date(document));
-				    ar.setTagHash(cr2.dang_select_Tags(document));
-				    ar.setWebsiteSource(cr2.dang_select_WebsiteSource());
+				    ar.setArticleLink(cr2.select_ArticleLink()); 
+				    ar.setArticleTitle(cr2.select_Title(document));
+				    ar.setArticleSummary(cr2.select_Summary(document));
+				    ar.setArticleType(cr2.select_ArticleType());
+				    ar.setAuthor(cr2.select_Author(document));
+				    ar.setCategory(cr2.select_Category(document));
+				    ar.setContent(cr2.select_Content(document));
+				    ar.setDate(cr2.select_Date(document));
+				    ar.setTagHash(cr2.select_Tags(document));
+				    ar.setWebsiteSource(cr2.select_WebsiteSource());
 				
-				    csvWriter.dang_AppendData(ar);
+				    csvWriter.appendData(ar);
 				    
 				    selectedList.set(x, "1");
 				    
@@ -156,7 +146,7 @@ public class Crawler_2 extends Crawler {
 		   x++;
         }
         CsvWriter w = new CsvWriter(cr2.linkPath);
-        w.dang_update(sttList, linkList, selectedList);
+        w.updateLink(sttList, linkList, selectedList);
         
           
         
