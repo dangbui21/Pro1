@@ -56,7 +56,7 @@ public class Crawler_1 extends Crawler {
     }
 
     
-    public static void main(String[] args) {   
+    public void runCrawler() {
         String chromePath = "D:/Workspace/Java/Pro1/chrome-win64/chrome.exe";   
         String articleLink = "https://www.blockchain.com/blog/posts/pay-metamask";
         String dataPath = "D:/Workspace/Java/Pro1/data/data.csv";
@@ -75,20 +75,21 @@ public class Crawler_1 extends Crawler {
             e.printStackTrace();
         }
         
-      //Load them bai viet
+        //Load thêm bài viết
         Random random = new Random();
         for(int i=0 ; i<100 ; i++) {
-        	// Tìm phần tử chứa nút "Load More Posts"
-            WebElement loadMoreButton = driver.findElement(By.id("btnLoadMore"));
-            // Thực hiện click vào nút "Load More Posts"
-            loadMoreButton.click();
-            
-            // ngủ từ 4 đến 8 giây
-            int randomDelay = random.nextInt(4) + 4;
             try {
+                // Tìm phần tử chứa nút "Load More Posts"
+                WebElement loadMoreButton = driver.findElement(By.id("btnLoadMore"));
+                // Thực hiện click vào nút "Load More Posts"
+                loadMoreButton.click();
+                
+                // ngủ từ 4 đến 8 giây
+                int randomDelay = random.nextInt(4) + 4;
                 Thread.sleep(randomDelay * 1000);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt(); 
+            } catch (Exception e) {
+                System.out.println("Đã xảy ra lỗi khi thực hiện click vào nút Load More Posts: " + e.getMessage());
+                break;
             }
         }
         
@@ -98,7 +99,6 @@ public class Crawler_1 extends Crawler {
         // Sử dụng Jsoup để phân tích HTML
         Document document = Jsoup.parse(html);
        
-               
         Article ar = new Article();
         CsvWriter csvWriter = new CsvWriter(dataPath);
         // Khởi tạo một đối tượng Crawl_1 với constructor mặc định
@@ -106,7 +106,7 @@ public class Crawler_1 extends Crawler {
         cr1.setKey(articleLink);
         
         // Duyệt qua các phần tử và lấy văn bản trong đó 
-        int i = CsvReader.countLines(dataPath);//số hàng đang có trong file csv
+        int i = CsvReader.countLines(dataPath); //số hàng đang có trong file csv
         
         ar.setId(i);
         ar.setArticleLink(cr1.select_ArticleLink()); 
@@ -121,10 +121,7 @@ public class Crawler_1 extends Crawler {
         ar.setWebsiteSource(cr1.select_WebsiteSource());
         
         csvWriter.appendData(ar);
-        
     }
-    
-    
-	
+    	
 
 }

@@ -22,7 +22,7 @@ import data_interaction.*;
 
 
 public class Crawler_4 extends Crawler{
-    private String fileCSVPath = "C:/Users/namcl/eclipse-workspace/OOPOffical/data/data.csv";
+    private String fileCSVPath = "D:/Workspace/Java/Pro1/data/4/data.csv";
     
 	public void setKey() throws IOException {
 		setKey_articleLink("meta[property*='og:url']");
@@ -116,8 +116,49 @@ public class Crawler_4 extends Crawler{
     	csvWriter.appendData(article);
     }
     
+    public void runCrawler() {
+        try {
+            String chromePath = "D:/Workspace/Java/Pro1/chrome-win64/chrome.exe";
+            String urlToHome = "https://www.coindesk.com/search?s=blockchain";
+            ChromeOptions options = new ChromeOptions();
+            options.setBinary(chromePath);
+            WebDriver driver = new ChromeDriver();
+            driver.get(urlToHome);
+            Actions act = new Actions(driver);
+            WebElement showMore = driver.findElement(By.cssSelector("#queryly_advanced_container > div:nth-child(5) > div.Box-sc-1hpkeeg-0.eiOgYh > button:nth-child(8)"));
+            Random random = new Random(); 
+            String html = driver.getPageSource();
+            Document doc = Jsoup.parse(html);
+            Elements articleLinks = doc.select("a[class*='searchstyles__ImageContainer']");
+            int i = 1;
+            Crawler_4 cr = new Crawler_4();
+            cr.setKey();
+            while(true) {
+                for (Element articleLink : articleLinks) {
+                    String articleLinkk = "https://www.coindesk.com" + articleLink.attr("href");
+                    if(articleLinkk.startsWith("https://www.coindesk.com/podcasts")) continue;
+                    System.out.println(i + ": " + articleLinkk);
+                    
+                    try {
+                        Document docArticle = Jsoup.connect(articleLinkk).timeout(10 * 1000).get();  
+                        cr.cralingAll(docArticle, String.valueOf(i));
+                        i++;
+                        Thread.sleep(random.nextInt(500) + 500);
+                    } catch (IOException e) {
+                        System.out.println("Connection timed out or failed: " + e.getMessage());
+                        continue;
+                    }
+                }
+                act.click(showMore).build().perform();
+                Thread.sleep(random.nextInt(750));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static void main(String[] args) throws IOException, InterruptedException {
-		String chromePath = "C:/Users/namcl/eclipse-workspace/OOPOffical/chrome-win64/chrome.exe";
+		String chromePath = "D:/Workspace/Java/Pro1/chrome-win64/chrome.exe";
 		String urlToHome = "https://www.coindesk.com/search?s=blockchain";
 		ChromeOptions options = new ChromeOptions();
         options.setBinary(chromePath);
